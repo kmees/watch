@@ -3,9 +3,10 @@
 var argv = require('minimist')(process.argv.slice(2))
 var execshell = require('exec-sh')
 var watch = require('./main.js')
+var minimatch = require('minimatch');
 
 if(argv._.length === 0) {
-  console.error('Usage: watch <command> [...directory] [--wait=<seconds>] [--ignoreDotFiles] [--ignoreUnreadable]')
+  console.error('Usage: watch <command> [...directory] [--wait=<seconds>] [--ignoreDotFiles] [--ignoreUnreadable] [--filter=<glob>]')
   process.exit()
 }
 
@@ -30,6 +31,11 @@ if(argv.ignoreDotFiles || argv.d)
 
 if(argv.ignoreUnreadable || argv.u)
   watchTreeOpts.ignoreUnreadableDir = true
+
+if(argv.filter || argv.f)
+  watchTreeOpts.filter = function(file) {
+    return minimatch(file, argv.filter || argv.f);
+  }
 
 var wait = false
 
